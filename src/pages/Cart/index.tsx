@@ -68,11 +68,12 @@ const Cart: React.FC = () => {
           data={products}
           keyExtractor={item => item.id}
           ListFooterComponent={<View />}
+          extraData={products}
           ListFooterComponentStyle={{
             height: 80,
           }}
-          renderItem={({ item }: { item: Product }) => (
-            <Product>
+          renderItem={({ item }) => (
+            <Product key={`${item.id}-${Date.now()}`}>
               <ProductImage source={{ uri: item.image_url }} />
               <ProductTitleContainer>
                 <ProductTitle>{item.title}</ProductTitle>

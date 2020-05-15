@@ -46,11 +46,24 @@ const CartProvider: React.FC = ({ children }) => {
 
   const addToCart = useCallback(
     async product => {
-      const newProduct = product;
-      if (!newProduct.quantity) {
-        newProduct.quantity = 1;
+      const hasProduct = products.findIndex(item => item.id === product.id);
+
+      if (hasProduct > -1) {
+        const newArrayOfProducts = products;
+        const newProduct = newArrayOfProducts[hasProduct];
+
+        newProduct.quantity += 1;
+
+        newArrayOfProducts[hasProduct] = newProduct;
+        setProducts([...newArrayOfProducts]);
+      } else {
+        const newProduct = product;
+        if (!newProduct.quantity) {
+          newProduct.quantity = 1;
+        }
+        setProducts([...products, newProduct]);
       }
-      setProducts([...products, newProduct]);
+
       await handleStoreData();
     },
     [products, handleStoreData],
