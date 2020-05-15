@@ -40,43 +40,20 @@ const CartProvider: React.FC = ({ children }) => {
     loadProducts();
   }, []);
 
-  // useEffect(() => {
-  //   async function saveData(): Promise<void> {
-  //     console.log('foi pro  async');
-  //     await AsyncStorage.setItem('cart', JSON.stringify(products));
-  //   }
-
-  //   saveData();
-  // }, [products]);
+  const handleStoreData = useCallback(async () => {
+    await AsyncStorage.setItem('cart', JSON.stringify(products));
+  }, [products]);
 
   const addToCart = useCallback(
     async product => {
-      if (products.length > 0) {
-        const productIndex = products.findIndex(item => item.id === product.id);
-        if (productIndex > -1) {
-          const newArrayOfProducts = products;
-          newArrayOfProducts[productIndex].quantity += 1;
-          setProducts([...newArrayOfProducts]);
-          await AsyncStorage.setItem(
-            'cart',
-            JSON.stringify([...newArrayOfProducts]),
-          );
-        } else {
-          setProducts([...products, product]);
-          await AsyncStorage.setItem(
-            'cart',
-            JSON.stringify([...products, product]),
-          );
-        }
-      } else {
-        setProducts([...products, product]);
-        await AsyncStorage.setItem(
-          'cart',
-          JSON.stringify([...products, product]),
-        );
+      const newProduct = product;
+      if (!newProduct.quantity) {
+        newProduct.quantity = 1;
       }
+      setProducts([...products, newProduct]);
+      await handleStoreData();
     },
-    [products],
+    [products, handleStoreData],
   );
 
   const increment = useCallback(
@@ -88,12 +65,9 @@ const CartProvider: React.FC = ({ children }) => {
         return product;
       });
       setProducts([...newArrayOfProducts]);
-      await AsyncStorage.setItem(
-        'cart',
-        JSON.stringify([...newArrayOfProducts]),
-      );
+      await handleStoreData();
     },
-    [products],
+    [products, handleStoreData],
   );
 
   const decrement = useCallback(
@@ -113,12 +87,9 @@ const CartProvider: React.FC = ({ children }) => {
         }
       }
       setProducts([...newArrayOfProducts]);
-      await AsyncStorage.setItem(
-        'cart',
-        JSON.stringify([...newArrayOfProducts]),
-      );
+      await handleStoreData();
     },
-    [products],
+    [products, handleStoreData],
   );
 
   const value = React.useMemo(
